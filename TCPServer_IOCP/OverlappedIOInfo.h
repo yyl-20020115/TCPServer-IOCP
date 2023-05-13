@@ -9,8 +9,9 @@
 */
 #include "stdafx.h"
 #define MAXBUF 8*1024
+//MTU:46~1500
 
-enum class IOOperType :int
+enum class IOCP_OperationType :int
 {
 	TYPE_ACP,					//accept事件到达，有新的连接请求
 	TYPE_RECV,				   //数据接收事件
@@ -24,12 +25,12 @@ class COverlappedIOInfo
 {
 public:
 	COverlappedIOInfo(void)
-		: m_socket(INVALID_SOCKET)
-		, m_recvBuf()
-		, m_crecvBuf()
-		, m_sendBuf()
-		, m_csendBuf()
-		, m_addr()
+		: socket(INVALID_SOCKET)
+		, recvBuf()
+		, crecvBuf()
+		, sendBuf()
+		, csendBuf()
+		, peerAddress()
 	{
 		ResetOverlapped();
 		ResetRecvBuffer();
@@ -37,10 +38,10 @@ public:
 	}
 	~COverlappedIOInfo(void)
 	{
-		if (m_socket != INVALID_SOCKET)
+		if (socket != INVALID_SOCKET)
 		{
-			closesocket(m_socket);
-			m_socket = INVALID_SOCKET;
+			closesocket(socket);
+			socket = INVALID_SOCKET;
 		}
 	}
 
@@ -52,29 +53,29 @@ public:
 	}
 	void ResetRecvBuffer()
 	{
-		ZeroMemory(m_crecvBuf, MAXBUF);
-		m_recvBuf.buf = m_crecvBuf;
-		m_recvBuf.len = MAXBUF;
+		ZeroMemory(crecvBuf, MAXBUF);
+		recvBuf.buf = crecvBuf;
+		recvBuf.len = MAXBUF;
 	}
 	void ResetSendBuffer()
 	{
-		ZeroMemory(m_csendBuf, MAXBUF);
-		m_sendBuf.buf = m_csendBuf;
-		m_sendBuf.len = MAXBUF;
+		ZeroMemory(csendBuf, MAXBUF);
+		sendBuf.buf = csendBuf;
+		sendBuf.len = MAXBUF;
 	}
 
 
 public:
-	SOCKET m_socket;		//套接字
+	SOCKET socket;		//套接字
 
 	//接收缓冲区，用于AcceptEx, WSARecv操作
-	WSABUF m_recvBuf;	
-	char m_crecvBuf[MAXBUF];
+	WSABUF recvBuf;	
+	char crecvBuf[MAXBUF];
 
 	//发送缓冲区， 用于WSASend操作
-	WSABUF m_sendBuf;  
-	char m_csendBuf[MAXBUF];
+	WSABUF sendBuf;  
+	char csendBuf[MAXBUF];
 
 	//对端地址
-	sockaddr_in m_addr;
+	sockaddr_in peerAddress;
 };
