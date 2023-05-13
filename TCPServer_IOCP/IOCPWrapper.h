@@ -8,8 +8,8 @@ class CIOCP
 public:
 	//CIOCP构造函数
 	CIOCP(int nMaxConcurrent = -1)
+		:m_hIOCP(0)
 	{
-		m_hIOCP = NULL;
 		if (nMaxConcurrent != -1)
 		{
 			Create(nMaxConcurrent);
@@ -18,17 +18,21 @@ public:
 	//CIOCP析构函数
 	~CIOCP()
 	{
-		if (m_hIOCP != NULL)
+		if (m_hIOCP != 0)
 		{
 			CloseHandle(m_hIOCP);
+			m_hIOCP = 0;
 		}
 	}
 
 	//关闭IOCP
 	bool Close()
 	{
-		bool bResult = CloseHandle(m_hIOCP);
-		m_hIOCP = NULL;
+		bool bResult = false;
+		if (m_hIOCP != 0) {
+			bResult = CloseHandle(m_hIOCP);
+			m_hIOCP = 0;
+		}
 		return bResult;
 	}
 
@@ -36,8 +40,7 @@ public:
 	bool Create(int nMaxConcurrency = 0)
 	{
 		m_hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, nMaxConcurrency);  
-		//ASSERT(m_hIOCP != NULL);
-		return (m_hIOCP != NULL);
+		return (m_hIOCP != 0);
 	}
 
 	//为设备（文件，socket,邮件槽，管道等）关联一个IOCP
@@ -65,7 +68,7 @@ public:
 		return GetQueuedCompletionStatus(m_hIOCP, pdwNumBytes, pCompKey, ppo, dwMillseconds);
 	}
 	//获取IOCP对象
-	const HANDLE GetIOCP()
+	const HANDLE GetIOCPHandle()
 	{
 		return m_hIOCP;
 	}

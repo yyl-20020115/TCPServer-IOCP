@@ -3,10 +3,10 @@
 
 int main(int argc, char *argv[])
 {
-	TCPServerBootstrap* server = TCPServer::getInstance();
-	server->StartListen(20000, "0.0.0.0");
+	TCPServerBootstrap* server = TCPServer::GetInstance();
+	server->StartListening(20000, "0.0.0.0");
 	int cmd = 0;
-	while (cin >> cmd)
+	while (std::cin >> cmd)
 	{
 		if (cmd == 1)
 		{
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			//输入任意数字，打印所有在线客户端信息
-			server->getConnectionClient();
+			server->GetConnectionClient();
 		}
 	}
 	Sleep(5000);

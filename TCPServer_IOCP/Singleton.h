@@ -8,10 +8,9 @@ private:
 	static T* instance_;   //静态类成员实例延迟创建
 	Singleton(void);		   //私有构造函数
 
-
 public:
-	static T* getInstance(void);
-	static void close(void);
+	static T* GetInstance(void);
+	static void Close(void);
 };
 
 //模板类static变量 类内声明，类外定义
@@ -20,21 +19,20 @@ T* Singleton<T>::instance_ = nullptr;
 
 //static T* getInstance()方法实现
 template <class T>
-T* Singleton<T>::getInstance(void)
+T* Singleton<T>::GetInstance(void)
 {
 	static std::once_flag oc;  //用于call_once的局部静态变量
-	std::call_once(oc, 
-									[&](void)
-									{
-										instance_ = new T();
-									});
+	std::call_once(oc,[&](void)
+	{
+		instance_ = new T();
+	});
 	return instance_;
 }
 
 
 //static void close()方法实现
 template<class T>
-void Singleton<T>::close(void)
+void Singleton<T>::Close(void)
 {
 	if (instance_)
 	{

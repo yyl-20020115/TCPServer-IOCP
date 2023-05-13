@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #define MAXBUF 8*1024
 
-enum IOOperType
+enum class IOOperType :int
 {
 	TYPE_ACP,					//accept事件到达，有新的连接请求
 	TYPE_RECV,				   //数据接收事件
@@ -19,12 +19,18 @@ enum IOOperType
 	TYPE_NO_OPER  
 };
 
-class COverlappedIOInfo : public OVERLAPPED
+class COverlappedIOInfo 
+	: public OVERLAPPED
 {
 public:
 	COverlappedIOInfo(void)
+		: m_socket(INVALID_SOCKET)
+		, m_recvBuf()
+		, m_crecvBuf()
+		, m_sendBuf()
+		, m_csendBuf()
+		, m_addr()
 	{
-		m_socket = INVALID_SOCKET;
 		ResetOverlapped();
 		ResetRecvBuffer();
 		ResetSendBuffer();

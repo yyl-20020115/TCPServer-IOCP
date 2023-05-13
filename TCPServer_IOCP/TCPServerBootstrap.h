@@ -1,16 +1,17 @@
 #pragma once
 #include "stdafx.h"
-using namespace std;
 
-class TCPServerBootstrap{
+class TCPServerBootstrap 
+{
 public:
 	//构造函数
-	TCPServerBootstrap() ;
+	TCPServerBootstrap();
 	//虚构函数
 	~TCPServerBootstrap();
+public:
 	//开始监听
-	bool StartListen(unsigned short port, string ip);
-	void getConnectionClient();
+	bool StartListening(unsigned short port, const std::string& ip = "0.0.0.0");
+	void GetConnectionClient();
 	/*
 	释放3个部分步骤：
 	1. 清空IOCP线程队列，退出线程
@@ -21,7 +22,7 @@ public:
 	//私有成员函数
 private:
 	//启动CPU*2个线程，返回已启动的线程个数
-	int StartWorkThreadPool();
+	size_t StartWorkThreadPool();
 	//获取AcceptEx_和 GetAcceptExSockaddrs 函数指针
 	bool GetLPFNAcceptExAndGetAcceptSockaddrs();
 	//利用AcceptEx_监听accept请求
@@ -40,13 +41,13 @@ private:
 	//winsock版本类型
 	WSAData m_wsaData;
 	//端口监听套接字
-	SOCKET m_sListen;
+	SOCKET m_ListeningSocket;
 	//等待accept的套接字，这些套接字都是没有使用过的，数量为ACCEPT_SOCKET_NUM。同时会有10个套接字等待accept
-	vector<SOCKET> m_vecAcps;
+	std::vector<SOCKET> m_vecAcps;
 	//已建立连接的信息，每个结构含有一个套接字、发送缓冲区、接收缓冲区、对端地址
-	vector<COverlappedIOInfo*> m_vecContInfo;
+	std::vector<COverlappedIOInfo*> m_vecContInfo;
 	//操作vector的互斥访问锁
-	mutex m_mu;
+	std::mutex m_mu;
 	//CIOCP封装类
 	CIOCP m_iocp;
 	//AcceptEx_函数指针
